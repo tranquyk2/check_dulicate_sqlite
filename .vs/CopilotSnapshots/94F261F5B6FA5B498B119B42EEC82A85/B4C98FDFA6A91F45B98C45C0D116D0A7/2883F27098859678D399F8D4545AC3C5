@@ -29,15 +29,12 @@
         private void InitializeComponent()
         {
             DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
+            TextBox txtBarcode;
             panelMain = new Panel();
+            btnExcel = new Button();
             btnDelete = new Button();
             btnAdd = new Button();
             btnLoadDB = new Button();
-            txtSearch = new TextBox();
-            btnSearch = new Button();
-            btnExportMonth = new Button();
-            dtpMonth = new DateTimePicker();
             dataGridView1 = new DataGridView();
             dataGridViewTextBoxColumn1 = new DataGridViewTextBoxColumn();
             dataGridViewTextBoxColumn2 = new DataGridViewTextBoxColumn();
@@ -61,13 +58,10 @@
             // 
             // panelMain
             // 
+            panelMain.Controls.Add(btnExcel);
             panelMain.Controls.Add(btnDelete);
             panelMain.Controls.Add(btnAdd);
             panelMain.Controls.Add(btnLoadDB);
-            panelMain.Controls.Add(txtSearch);
-            panelMain.Controls.Add(btnSearch);
-            panelMain.Controls.Add(btnExportMonth);
-            panelMain.Controls.Add(dtpMonth);
             panelMain.Controls.Add(dataGridView1);
             panelMain.Controls.Add(cbCasx);
             panelMain.Controls.Add(dtpDate);
@@ -86,11 +80,22 @@
             panelMain.Size = new Size(1773, 679);
             panelMain.TabIndex = 0;
             // 
+            // btnExcel
+            // 
+            btnExcel.BackColor = Color.FromArgb(0, 192, 0);
+            btnExcel.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnExcel.ForeColor = Color.White;
+            btnExcel.Location = new Point(612, 37);
+            btnExcel.Name = "btnExcel";
+            btnExcel.Size = new Size(111, 103);
+            btnExcel.TabIndex = 50;
+            btnExcel.Text = "EXCEL";
+            btnExcel.UseVisualStyleBackColor = false;
+            // 
             // btnDelete
             // 
             btnDelete.BackColor = Color.Red;
             btnDelete.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            btnDelete.ForeColor = Color.White;
             btnDelete.Location = new Point(488, 92);
             btnDelete.Name = "btnDelete";
             btnDelete.Size = new Size(118, 48);
@@ -100,9 +105,9 @@
             // 
             // btnAdd
             // 
-            btnAdd.BackColor = Color.FromArgb(0, 192, 192);
+            btnAdd.BackColor = Color.FromArgb(255, 255, 192);
             btnAdd.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            btnAdd.ForeColor = Color.Transparent;
+            btnAdd.ForeColor = Color.Black;
             btnAdd.Location = new Point(488, 37);
             btnAdd.Name = "btnAdd";
             btnAdd.Size = new Size(118, 54);
@@ -116,56 +121,12 @@
             btnLoadDB.BackColor = Color.FromArgb(0, 150, 255);
             btnLoadDB.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnLoadDB.ForeColor = Color.White;
-            btnLoadDB.Location = new Point(742, 37);
+            btnLoadDB.Location = new Point(729, 37);
             btnLoadDB.Name = "btnLoadDB";
             btnLoadDB.Size = new Size(111, 103);
             btnLoadDB.TabIndex = 51;
             btnLoadDB.Text = "LOAD DATA";
             btnLoadDB.UseVisualStyleBackColor = false;
-            // 
-            // txtSearch
-            // 
-            txtSearch.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            txtSearch.Location = new Point(26, 231);
-            txtSearch.Name = "txtSearch";
-            txtSearch.PlaceholderText = "Nhập barcode cần tìm...";
-            txtSearch.Size = new Size(300, 34);
-            txtSearch.TabIndex = 52;
-            // 
-            // btnSearch
-            // 
-            btnSearch.BackColor = Color.FromArgb(255, 128, 0);
-            btnSearch.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            btnSearch.ForeColor = Color.White;
-            btnSearch.Location = new Point(332, 231);
-            btnSearch.Name = "btnSearch";
-            btnSearch.Size = new Size(90, 34);
-            btnSearch.TabIndex = 53;
-            btnSearch.Text = "TÌM KIẾM";
-            btnSearch.UseVisualStyleBackColor = false;
-            // 
-            // btnExportMonth
-            // 
-            btnExportMonth.BackColor = Color.FromArgb(0, 192, 0);
-            btnExportMonth.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            btnExportMonth.ForeColor = Color.White;
-            btnExportMonth.Location = new Point(613, 92);
-            btnExportMonth.Name = "btnExportMonth";
-            btnExportMonth.Size = new Size(119, 46);
-            btnExportMonth.TabIndex = 55;
-            btnExportMonth.Text = "XUẤT EXCEL ";
-            btnExportMonth.UseVisualStyleBackColor = false;
-            // 
-            // dtpMonth
-            // 
-            dtpMonth.CustomFormat = "MM/yyyy";
-            dtpMonth.Font = new Font("Segoe UI", 11F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            dtpMonth.Format = DateTimePickerFormat.Custom;
-            dtpMonth.Location = new Point(616, 54);
-            dtpMonth.Name = "dtpMonth";
-            dtpMonth.ShowUpDown = true;
-            dtpMonth.Size = new Size(120, 32);
-            dtpMonth.TabIndex = 54;
             // 
             // dataGridView1
             // 
@@ -183,21 +144,13 @@
             dataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             dataGridView1.ColumnHeadersHeight = 60;
             dataGridView1.Columns.AddRange(new DataGridViewColumn[] { dataGridViewTextBoxColumn1, dataGridViewTextBoxColumn2, dataGridViewTextBoxColumn3, dataGridViewTextBoxColumn4, dataGridViewTextBoxColumn5 });
-            dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = SystemColors.Window;
-            dataGridViewCellStyle2.Font = new Font("Segoe UI", 14F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            dataGridViewCellStyle2.ForeColor = SystemColors.ControlText;
-            dataGridViewCellStyle2.SelectionBackColor = SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = DataGridViewTriState.False;
-            dataGridView1.DefaultCellStyle = dataGridViewCellStyle2;
-            dataGridView1.Location = new Point(12, 271);
+            dataGridView1.Location = new Point(12, 223);
             dataGridView1.Name = "dataGridView1";
             dataGridView1.RowHeadersVisible = false;
             dataGridView1.RowHeadersWidth = 51;
-            dataGridView1.RowTemplate.Height = 50;
+            dataGridView1.RowTemplate.Height = 40;
             dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dataGridView1.Size = new Size(1737, 405);
+            dataGridView1.Size = new Size(1737, 453);
             dataGridView1.TabIndex = 47;
             // 
             // dataGridViewTextBoxColumn1
@@ -245,7 +198,7 @@
             cbCasx.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
             cbCasx.FormattingEnabled = true;
             cbCasx.Items.AddRange(new object[] { "Ngày", "Đêm" });
-            cbCasx.Location = new Point(411, 179);
+            cbCasx.Location = new Point(783, 181);
             cbCasx.Name = "cbCasx";
             cbCasx.Size = new Size(110, 36);
             cbCasx.TabIndex = 46;
@@ -254,7 +207,7 @@
             // 
             dtpDate.CalendarFont = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             dtpDate.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            dtpDate.Location = new Point(603, 181);
+            dtpDate.Location = new Point(427, 181);
             dtpDate.Name = "dtpDate";
             dtpDate.Size = new Size(250, 34);
             dtpDate.TabIndex = 45;
@@ -265,9 +218,9 @@
             btnStatus.BackColor = Color.LimeGreen;
             btnStatus.Font = new Font("Segoe UI Black", 22.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnStatus.ForeColor = Color.White;
-            btnStatus.Location = new Point(742, 12);
+            btnStatus.Location = new Point(818, 12);
             btnStatus.Name = "btnStatus";
-            btnStatus.Size = new Size(1007, 253);
+            btnStatus.Size = new Size(931, 205);
             btnStatus.TabIndex = 44;
             btnStatus.Text = "OK";
             btnStatus.UseVisualStyleBackColor = false;
@@ -276,7 +229,7 @@
             // 
             label4.AutoSize = true;
             label4.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
-            label4.Location = new Point(405, 148);
+            label4.Location = new Point(777, 150);
             label4.Name = "label4";
             label4.Size = new Size(125, 28);
             label4.TabIndex = 43;
@@ -286,7 +239,7 @@
             // 
             label5.AutoSize = true;
             label5.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
-            label5.Location = new Point(603, 150);
+            label5.Location = new Point(427, 150);
             label5.Name = "label5";
             label5.Size = new Size(112, 28);
             label5.TabIndex = 42;
@@ -307,7 +260,6 @@
             txtSTTscan.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
             txtSTTscan.Location = new Point(215, 183);
             txtSTTscan.Name = "txtSTTscan";
-            txtSTTscan.ReadOnly = true;
             txtSTTscan.Size = new Size(117, 34);
             txtSTTscan.TabIndex = 40;
             // 
@@ -379,11 +331,8 @@
         private ComboBox cbCasx;
         private Button btnAdd;
         private Button btnDelete;
+        private Button btnExcel;
         private Button btnLoadDB;
-        private TextBox txtSearch;
-        private Button btnSearch;
-        private Button btnExportMonth;
-        private DateTimePicker dtpMonth;
         private Panel panelMain;
         private DataGridView dataGridView1;
         private TextBox txtBarcode;

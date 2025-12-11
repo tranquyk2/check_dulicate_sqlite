@@ -12,7 +12,148 @@ namespace Scanner
             txtBarcode.KeyDown += TxtBarcode_KeyDown;
             btnAdd.Click += BtnAdd_Click;
             btnDelete.Click += BtnDelete_Click;
-            btnExcel.Click += BtnExcel_Click;
+            btnLoadDB.Click += BtnLoadDB_Click;
+            btnSearch.Click += BtnSearch_Click;
+            btnExportMonth.Click += BtnExportMonth_Click;
+        }
+
+        private void BtnSearch_Click(object? sender, EventArgs e)
+        {
+            var searchText = txtSearch.Text.Trim();
+            if (string.IsNullOrEmpty(searchText))
+            {
+                MessageBox.Show("Vui lòng nhập barcode cần tìm.", "Thiếu dữ liệu", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtSearch.Focus();
+                return;
+            }
+
+            try
+            {
+                // Xóa dữ liệu hiện tại trong grid
+                dataGridView1.Rows.Clear();
+
+                // Tìm kiếm trong database
+                var records = ScanDatabase.SearchByBarcode(searchText, 1000);
+
+                if (records.Count == 0)
+                {
+                    MessageBox.Show($"Không tìm thấy barcode chứa '{searchText}'.", "Không có kết quả", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                // Thêm vào DataGridView
+                foreach (var record in records)
+                {
+                    dataGridView1.Rows.Add(record.STT.ToString(), record.Barcode, record.NgayGio, record.KetQua, record.Ca);
+                }
+
+                // Cập nhật số lượng
+                txtSTTscan.Text = dataGridView1.Rows.Count.ToString();
+
+                MessageBox.Show($"Tìm thấy {records.Count} kết quả.", "Tìm kiếm thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi tìm kiếm: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void BtnExportMonth_Click(object? sender, EventArgs e)
+        {
+            try
+            {
+                var selectedDate = dtpMonth.Value;
+                var year = selectedDate.Year;
+                var month = selectedDate.Month;
+
+                // Lấy dữ liệu từ database
+                var records = ScanDatabase.GetRecordsByMonth(year, month);
+
+                if (records.Count == 0)
+                {
+                    MessageBox.Show($"Không có dữ liệu trong tháng {month:00}/{year}.", "Không có dữ liệu", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                // Chọn nơi lưu file
+                using var sfd = new SaveFileDialog();
+                sfd.Filter = "Excel Workbook (*.xlsx)|*.xlsx";
+                sfd.FileName = $"ScanData_{year}_{month:00}.xlsx";
+                if (sfd.ShowDialog() != DialogResult.OK) return;
+
+                var file = sfd.FileName;
+
+                // Xuất ra Excel
+                using var wb = new XLWorkbook();
+                var ws = wb.Worksheets.Add($"Thang {month:00}-{year}");
+
+                // Headers
+                ws.Cell(1, 1).Value = "STT";
+                ws.Cell(1, 2).Value = "Barcode";
+                ws.Cell(1, 3).Value = "Ngày giờ";
+                ws.Cell(1, 4).Value = "Kết quả";
+                ws.Cell(1, 5).Value = "Ca";
+                ws.Cell(1, 6).Value = "Thời gian quét";
+
+                // Style headers
+                var headerRange = ws.Range(1, 1, 1, 6);
+                headerRange.Style.Font.Bold = true;
+                headerRange.Style.Fill.BackgroundColor = XLColor.LightBlue;
+                headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+                // Data rows
+                int row = 2;
+                foreach (var record in records)
+                {
+                    ws.Cell(row, 1).Value = record.STT;
+                    ws.Cell(row, 2).Value = record.Barcode;
+                    ws.Cell(row, 3).Value = record.NgayGio;
+                    ws.Cell(row, 4).Value = record.KetQua;
+                    ws.Cell(row, 5).Value = record.Ca;
+                    ws.Cell(row, 6).Value = record.ScanTime.ToString("yyyy-MM-dd HH:mm:ss");
+                    row++;
+                }
+
+                // Adjust columns
+                ws.Columns().AdjustToContents();
+
+                wb.SaveAs(file);
+
+                MessageBox.Show($"Đã xuất {records.Count} records của tháng {month:00}/{year} thành công!", "Xuất thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi xuất file: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void BtnLoadDB_Click(object? sender, EventArgs e)
+        {
+            try
+            {
+                // Xóa dữ liệu hiện tại trong grid
+                dataGridView1.Rows.Clear();
+
+                // Load 10000 record gần nhất từ database
+                var records = ScanDatabase.GetRecentScans(10000);
+                
+                // Thêm vào DataGridView
+                foreach (var record in records)
+                {
+                    dataGridView1.Rows.Add(record.STT.ToString(), record.Barcode, record.NgayGio, record.KetQua, record.Ca);
+                }
+
+                // Cập nhật số lượng
+                txtSTTscan.Text = dataGridView1.Rows.Count.ToString();
+
+                var totalRecords = ScanDatabase.GetTotalRecordCount();
+                MessageBox.Show($"Đã load {records.Count} record gần nhất.\nTổng số record trong database: {totalRecords:N0}", 
+                    "Load thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi load dữ liệu: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void BtnExcel_Click(object? sender, EventArgs e)
@@ -104,17 +245,34 @@ namespace Scanner
         {
             // remove selected row
             if (dataGridView1.SelectedRows.Count == 0) return;
+            
+            var deletedCount = 0;
             foreach (DataGridViewRow r in dataGridView1.SelectedRows)
             {
-                if (r.Cells[1].Value is string barcode)
+                // Lấy thông tin từ row để xóa trong database
+                var barcode = r.Cells[1].Value?.ToString() ?? string.Empty;
+                var ngayGio = r.Cells[2].Value?.ToString() ?? string.Empty;
+                var ketQua = r.Cells[3].Value?.ToString() ?? string.Empty;
+                
+                // Xóa trong database
+                if (ScanDatabase.DeleteRecordByBarcode(barcode, ngayGio, ketQua))
                 {
-                    // optionally unmark scanned
+                    deletedCount++;
                 }
+                
+                // Xóa trong DataGridView
                 dataGridView1.Rows.Remove(r);
             }
 
             // update txtSTTscan after deletions
             txtSTTscan.Text = dataGridView1.Rows.Count.ToString();
+            
+            if (deletedCount > 0)
+            {
+                // Cập nhật tổng số record trong title
+                var totalRecords = ScanDatabase.GetTotalRecordCount();
+                this.Text = $"Scanner - Tổng số record trong database: {totalRecords:N0}";
+            }
         }
 
         private void BtnAdd_Click(object? sender, EventArgs e)
@@ -136,6 +294,14 @@ namespace Scanner
                 {
                     MessageBox.Show("Vui lòng nhập STT Start Scan (số nguyên).", "Thiếu STT Start", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     txtStartscan.Focus();
+                    return;
+                }
+
+                // Require Ca sản xuất to be selected before scanning
+                if (cbCasx.SelectedItem == null || string.IsNullOrWhiteSpace(cbCasx.SelectedItem.ToString()))
+                {
+                    MessageBox.Show("Vui lòng chọn Ca sản xuất trước khi quét.", "Thiếu Ca sản xuất", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    cbCasx.Focus();
                     return;
                 }
 
@@ -221,8 +387,20 @@ namespace Scanner
 
             dataGridView1.Rows.Add(stt.ToString(), barcode, ngay, resultText, ca);
 
+            // Lưu vào database
+            ScanDatabase.SaveScanRecord(stt, barcode, ngay, resultText, ca);
+
             // update txtSTTscan to show how many rows currently in the grid
             txtSTTscan.Text = dataGridView1.Rows.Count.ToString();
+
+            // Tự động scroll xuống dòng mới nhất
+            if (dataGridView1.Rows.Count > 0)
+            {
+                dataGridView1.ClearSelection();
+                int lastIndex = dataGridView1.Rows.Count - 1;
+                dataGridView1.Rows[lastIndex].Selected = true;
+                dataGridView1.FirstDisplayedScrollingRowIndex = lastIndex;
+            }
 
             // focus back to input
             txtBarcode.Clear();
@@ -256,8 +434,27 @@ namespace Scanner
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            // initialize txtSTTscan to current rows count
-            txtSTTscan.Text = dataGridView1.Rows.Count.ToString();
+            // Tự động load 10000 records gần nhất khi khởi động
+            try
+            {
+                var records = ScanDatabase.GetRecentScans(10000);
+                
+                foreach (var record in records)
+                {
+                    dataGridView1.Rows.Add(record.STT.ToString(), record.Barcode, record.NgayGio, record.KetQua, record.Ca);
+                }
+                
+                // initialize txtSTTscan to current rows count
+                txtSTTscan.Text = dataGridView1.Rows.Count.ToString();
+
+                // Hiển thị tổng số record trong database
+                var totalRecords = ScanDatabase.GetTotalRecordCount();
+                this.Text = $"Scanner - Tổng số record trong database: {totalRecords:N0}";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi load dữ liệu: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void button2_Click(object sender, EventArgs e)
