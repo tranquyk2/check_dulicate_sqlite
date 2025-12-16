@@ -382,10 +382,12 @@ namespace Scanner
                 try { dataGridView1.FirstDisplayedScrollingRowIndex = existingRow.Index; } catch { }
             }
 
-            var ngay = dtpDate.Value.ToString("g");
+            // Use the actual current date/time for each scan (not the dtpDate picker value)
+            var ngay = DateTime.Now.ToString("g");
             var ca = cbCasx.SelectedItem?.ToString() ?? string.Empty;
 
-            dataGridView1.Rows.Add(stt.ToString(), barcode, ngay, resultText, ca);
+            // Insert new row at the top so newest entries appear first
+            dataGridView1.Rows.Insert(0, stt.ToString(), barcode, ngay, resultText, ca);
 
             // Lưu vào database
             ScanDatabase.SaveScanRecord(stt, barcode, ngay, resultText, ca);
@@ -393,13 +395,12 @@ namespace Scanner
             // update txtSTTscan to show how many rows currently in the grid
             txtSTTscan.Text = dataGridView1.Rows.Count.ToString();
 
-            // Tự động scroll xuống dòng mới nhất
+            // Select and ensure the top row (newly inserted) is visible
             if (dataGridView1.Rows.Count > 0)
             {
                 dataGridView1.ClearSelection();
-                int lastIndex = dataGridView1.Rows.Count - 1;
-                dataGridView1.Rows[lastIndex].Selected = true;
-                dataGridView1.FirstDisplayedScrollingRowIndex = lastIndex;
+                dataGridView1.Rows[0].Selected = true;
+                try { dataGridView1.FirstDisplayedScrollingRowIndex = 0; } catch { }
             }
 
             // focus back to input

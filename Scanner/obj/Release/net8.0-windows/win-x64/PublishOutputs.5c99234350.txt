@@ -1,0 +1,8 @@
+C:\Users\quyqu\OneDrive\Máy tính\Final-scan\Scanner.pdb
+C:\Users\quyqu\OneDrive\Máy tính\Final-scan\D3DCompiler_47_cor3.dll
+C:\Users\quyqu\OneDrive\Máy tính\Final-scan\PenImc_cor3.dll
+C:\Users\quyqu\OneDrive\Máy tính\Final-scan\PresentationNative_cor3.dll
+C:\Users\quyqu\OneDrive\Máy tính\Final-scan\vcruntime140_cor3.dll
+C:\Users\quyqu\OneDrive\Máy tính\Final-scan\wpfgfx_cor3.dll
+C:\Users\quyqu\OneDrive\Máy tính\Final-scan\e_sqlite3.dll
+C:\Users\quyqu\OneDrive\Máy tính\Final-scan\Scanner.exe

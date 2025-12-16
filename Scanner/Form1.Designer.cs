@@ -30,6 +30,7 @@
         {
             DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
             DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
+            TextBox txtBarcode;
             panelMain = new Panel();
             btnDelete = new Button();
             btnAdd = new Button();
@@ -265,9 +266,9 @@
             btnStatus.BackColor = Color.LimeGreen;
             btnStatus.Font = new Font("Segoe UI Black", 22.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnStatus.ForeColor = Color.White;
-            btnStatus.Location = new Point(742, 12);
+            btnStatus.Location = new Point(987, 12);
             btnStatus.Name = "btnStatus";
-            btnStatus.Size = new Size(1007, 253);
+            btnStatus.Size = new Size(762, 253);
             btnStatus.TabIndex = 44;
             btnStatus.Text = "OK";
             btnStatus.UseVisualStyleBackColor = false;
